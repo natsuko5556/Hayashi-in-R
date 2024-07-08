@@ -1,0 +1,51 @@
+library(hayashir)
+data('nerlove')
+
+lcost = log(nerlove$total_cost)
+loutp = log(nerlove$output)
+llabp = log(nerlove$price_labor)
+lfuep = log(nerlove$price_fuel)
+lcapp = log(nerlove$price_capital)
+
+# Q1 was answered in the paper
+
+# Q2
+unreslm = lm(lcost ~ loutp+llabp+lcapp+lfuep )
+summary(unreslm)
+
+#Q3
+ltcdp3 = log(nerlove$total_cost/nerlove$price_fuel)
+lp1p3 = log(nerlove$price_labor/nerlove$price_fuel)
+lp2p3 = log(nerlove$price_capital/nerlove$price_fuel)
+
+reslm01 = lm(ltcdp3 ~ loutp+lp1p3+lp2p3)
+summary(reslm01)
+plot(reslm01$residuals, pch = 16, col = "blue")
+
+#Q3 model1
+
+datahay1 = data.frame(ltcdp3,loutp,lp1p3,lp2p3)
+group_size = 29
+
+resultmodel1 = list()
+group_data =list()
+for (i in 1:5) {
+start_index = (i-1)*group_size +1
+end_index = i*group_size
+
+  group_data[[i]] = datahay1[start_index:end_index, ]
+  
+  reslm01 = lm(ltcdp3 ~ loutp+lp1p3+lp2p3, data = group_data[[i]])
+ 
+ resultmodel1[[i]] = summary(reslm01)
+}
+
+for (i in 1:5) {
+  cat("Group", i, "results:\n")
+  print(resultmodel1[[i]])
+  cat("\n\n")
+}
+
+
+
+
